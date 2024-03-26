@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('content', 50);
             $table->string('image')->nullable();
-            $table->string('programming_languages');
             $table->softDeletes();
             $table->timestamps();
         });

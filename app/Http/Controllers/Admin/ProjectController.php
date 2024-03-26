@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use App\Models\Technology;
 use App\Models\Type;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
@@ -30,7 +31,8 @@ class ProjectController extends Controller
     {
         $project = new Project();
         $types = Type::select('label', 'id')->get();
-        return view('admin.projects.create', compact('project', 'types'));
+        $technologies = Technology::select('label', 'id')->get();
+        return view('admin.projects.create', compact('project', 'types', 'technologies'));
     }
 
     /**
@@ -43,8 +45,8 @@ class ProjectController extends Controller
                 'title' => ['required', 'string', Rule::unique('projects')],
                 'content' => 'required|string',
                 'image' => 'nullable|image|mimes:png,jpg,jpeg',
-                'programming_languages' => ['required', 'array', 'min:1'],
-                'type_id' => 'nullable|exists:types,id'
+                'type_id' => 'nullable|exists:types,id',
+                'technologies' => 'nullable|exists:technologies,id'
             ],
             [
                 'title.required' => 'Il titolo è obbligatorio.',
@@ -52,17 +54,14 @@ class ProjectController extends Controller
                 'content.required' => 'La descrizione è obbligatoria.',
                 'image.image' => 'Il file inserito non è un\'immagine.',
                 'image.mimes' => 'Le estensioni consentite sono .png, .jpg, .jpeg.',
-                'programming_languages.required' => 'È necessario indicare alemno un linguaggio di programmazione.',
-                'type_id.exists' => 'Categoria non valida.'
+                'type_id.exists' => 'Categoria non valida.',
+                'technologies.exists' => 'Linguaggi di programmazione non validi.'
             ]
         );
 
         $data = $request->all();
 
         $project = new Project();
-
-        $programmingLanguages = $request->input('programming_languages', []);
-        $data['programming_languages'] = implode(',', $programmingLanguages);
 
         $project->fill($data);
         $project->slug = Str::slug($project->title);
@@ -73,6 +72,10 @@ class ProjectController extends Controller
         }
 
         $project->save();
+
+        if (Arr::exists($data, 'technologies')) {
+            $project->technologies()->attach($data['technologies']);
+        }
 
         return redirect()->route('admin.projects.show', $project->id)
             ->with('type', 'success')
@@ -92,8 +95,11 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
+        $prev_techs = $project->technologies->pluck('id')->toArray();
+
         $types = Type::select('label', 'id')->get();
-        return view('admin.projects.edit', compact('project', 'types'));
+        $technologies = Technology::select('label', 'id')->get();
+        return view('admin.projects.edit', compact('project', 'types', 'technologies', 'prev_techs'));
     }
 
     /**
@@ -106,8 +112,8 @@ class ProjectController extends Controller
                 'title' => ['required', 'string', Rule::unique('projects')->ignore($project->id)],
                 'content' => 'required|string',
                 'image' => 'nullable|image|mimes:png,jpg,jpeg',
-                'programming_languages' => ['required', 'array', 'min:1'],
-                'type_id' => 'nullable|exists:types,id'
+                'type_id' => 'nullable|exists:types,id',
+                'technologies' => 'nullable|exists:technologies,id',
             ],
             [
                 'title.required' => 'Il titolo è obbligatorio.',
@@ -115,15 +121,13 @@ class ProjectController extends Controller
                 'content.required' => 'La descrizione è obbligatoria.',
                 'image.image' => 'Il file inserito non è un\'immagine.',
                 'image.mimes' => 'Le estensioni consentite sono .png, .jpg, .jpeg.',
-                'programming_languages.required' => 'È necessario indicare alemno un linguaggio di programmazione.',
-                'type_id.exists' => 'Categoria non valida'
+                'type_id.exists' => 'Categoria non valida.',
+                'technologies.exists' => 'Linguaggi di programmazione non validi.',
             ]
         );
 
         $data = $request->all();
 
-        $programmingLanguages = $request->input('programming_languages', []);
-        $data['programming_languages'] = implode(',', $programmingLanguages);
 
         if (Arr::exists($data, 'image')) {
             if ($project->image) Storage::delete($project->image);
@@ -133,6 +137,14 @@ class ProjectController extends Controller
         }
 
         $project->update($data);
+
+        if (Arr::exists($data, 'image')) {
+            $img_url = Storage::putFile('project_images', $data['image']);
+            $project->image = $img_url;
+        }
+
+        if (Arr::exists($data, 'technologies')) $project->technologies()->sync($data['technologies']);
+        elseif (!Arr::exists($data, 'technologies') && $project->has('technologies')) $project->technologies()->detach();
 
         return to_route('admin.projects.show', $project->id)
             ->with('type', 'success')
@@ -169,6 +181,7 @@ class ProjectController extends Controller
 
     public function drop(project $project)
     {
+        if ($project->has('technologies')) $project->technologies()->detach();
         if ($project->image) Storage::delete($project->image);
         $project->forceDelete();
 

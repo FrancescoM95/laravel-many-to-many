@@ -25,8 +25,17 @@
         <input type="text" class="form-control" id="slug" value="{{ Str::slug(old('title', $project->title)) }}" disabled>
     </div>
     <div class="col-3">
-        <label for="title" class="form-label">Linguaggi di Programmazione</label>
-        <div class="form-group d-flex gap-3">
+        <label for="form-check" class="form-label">Linguaggi di programmazione</label>
+        @foreach ($technologies as $technology)
+        <div class="form-check form-check-inline" id="form-check">
+            <input class="form-check-input" type="checkbox" name="technologies[]" id="{{ "technology-$technology->id" }}" value="{{ $technology->id}}" @if (in_array($technology->id, old('technologies', $prev_techs))) checked @endif>
+            <label for="title" class="form-label">{{ $technology->label }}</label>
+        </div>
+        @endforeach
+       
+
+
+        {{-- <div class="form-group d-flex gap-3">
             <div class="form-check">
                 <input class="form-check-input  @error('programming_languages') is-invalid @enderror" type="checkbox" id="htmlCheckbox" name="programming_languages[]" value="HTML" {{ $project->exists && strpos($project->programming_languages, 'HTML') !== false ? 'checked' : '' }}>
                 <label class="form-check-label" for="htmlCheckbox">
@@ -51,7 +60,7 @@
                     PHP
                 </label>
             </div>
-        </div>
+        </div> --}}
     </div>
 
     <div class="col-9">

@@ -14,10 +14,11 @@ class DatabaseSeeder extends Seeder
     {
         \App\Models\User::factory()->create();
 
-        $this->call([TypeSeeder::class, TechnologySeeder::class]);
-
+        $this->call(TypeSeeder::class);
 
         \App\Models\Project::factory(30)->create();
+
+        $this->call(TechnologySeeder::class);
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',
