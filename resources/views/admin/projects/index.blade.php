@@ -19,9 +19,9 @@
             <th scope="col">Slug</th>
             <th scope="col" class="w-25">Descrizione</th>
             <th scope="col">Linguaggi</th>
-            <th scope="col">Categoria</th>
-            <th scope="col">Data creazione</th>
-            <th scope="col">Ultima modifica</th>
+            <th scope="col" class="text-center">Categoria</th>
+            <th scope="col" class="text-center">Data creazione</th>
+            <th scope="col" class="text-center">Ultima modifica</th>
             <th scope="col"></th>
           </tr>
         </thead>
@@ -37,11 +37,11 @@
                   <span class="badge rounded-pill text-bg-{{ $technology->color }}">{{ $technology->label }}</span>
                   @empty
                     N.D.
-                  @endforelse ($project->technology)
+                  @endforelse
                 </td>
                 <td class="text-center"><span class="badge" style="background-color: {{ $project->type?->color }}">{{ $project->type? $project->type->label : 'Nessuna' }}</span></td>
-                <td>{{ $project->getCreatedAt() }}</td>
-                <td>{{ $project->getUpdatedAt() }}</td>
+                <td class="text-center">{{ $project->getCreatedAt() }}</td>
+                <td class="text-center">{{ $project->getUpdatedAt() }}</td>
                 <td>
                   <div class="d-flex gap-2">
                     <a href="{{ route('admin.projects.show', $project->id)}}" class="btn btn-sm btn-primary">

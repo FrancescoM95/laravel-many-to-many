@@ -25,7 +25,11 @@
           <div class="d-flex justify-content-between mt-4">
             <div>
               <strong>Linguaggi di programmazione:</strong>
-              {{ $project->programming_languages }}.
+              @forelse ($project->technologies as $technology)
+              <span class="badge rounded-pill text-bg-{{ $technology->color }}">{{ $technology->label }}</span>
+              @empty
+                N.D.
+              @endforelse
             </div>
   
             <div class="d-flex flex-column align-items-end gap-2">

@@ -17,9 +17,9 @@
             <th scope="col">Slug</th>
             <th scope="col" class="w-25">Descrizione</th>
             <th scope="col">Linguaggi</th>
-            <th scope="col">Categoria</th>
-            <th scope="col">Data creazione</th>
-            <th scope="col">Ultima modifica</th>
+            <th scope="col" class="text-center">Categoria</th>
+            <th scope="col" class="text-center">Data creazione</th>
+            <th scope="col" class="text-center">Ultima modifica</th>
             <th scope="col"></th>
           </tr>
         </thead>
@@ -30,10 +30,16 @@
                 <td>{{ $project->title }}</td>
                 <td>{{ $project->slug }}</td>
                 <td>{{ $project->content }}</td>
-                <td>{{ $project->programming_languages }}</td>
+                <td>
+                  @forelse ($project->technologies as $technology)
+                  <span class="badge rounded-pill text-bg-{{ $technology->color }}">{{ $technology->label }}</span>
+                  @empty
+                    N.D.
+                  @endforelse
+                </td>
                 <td class="text-center"><span class="badge" style="background-color: {{ $project->type?->color }}">{{ $project->type? $project->type->label : 'Nessuna' }}</span></td>
-                <td>{{ $project->getUpdatedAt() }}</td>
-                <td>{{ $project->getUpdatedAt() }}</td>
+                <td class="text-center">{{ $project->getUpdatedAt() }}</td>
+                <td class="text-center">{{ $project->getUpdatedAt() }}</td>
                 <td>
                   <div class="d-flex gap-2 justify-content-end">
                     <form action="{{ route('admin.projects.restore', $project->id) }}" method="POST">

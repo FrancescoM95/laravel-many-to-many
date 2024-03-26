@@ -18,7 +18,14 @@
                 <p class="card-text overflow-auto" style="height: 300px">{{ $project->content }}</p>
             </div>
             <div class="card-footer">
-                <p class="card-text mb-1"><strong>Stack:</strong> {{ $project->programming_languages }}.</p>
+                <div class="mb-2">
+                    <strong>Linguaggi di programmazione:</strong><br>
+                    @forelse ($project->technologies as $technology)
+                    <span class="badge rounded-pill text-bg-{{ $technology->color }}">{{ $technology->label }}</span>
+                    @empty
+                      N.D.
+                    @endforelse
+                </div>
                 <p class="card-text mb-1"><strong>Data creazione:</strong> {{ $project->getCreatedAt() }}</p>
             </div>
             <a href="{{ route('guest.projects.show', $project->slug)}}" class="btn btn-sm btn-outline-info">
