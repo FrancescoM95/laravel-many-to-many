@@ -32,7 +32,13 @@
                 <td>{{ $project->title }}</td>
                 <td>{{ $project->slug }}</td>
                 <td>{{ $project->content }}</td>
-                <td>{{ $project->programming_languages }}</td>
+                <td>
+                  @forelse ($project->technologies as $technology)
+                  <span class="badge rounded-pill text-bg-{{ $technology->color }}">{{ $technology->label }}</span>
+                  @empty
+                    N.D.
+                  @endforelse ($project->technology)
+                </td>
                 <td class="text-center"><span class="badge" style="background-color: {{ $project->type?->color }}">{{ $project->type? $project->type->label : 'Nessuna' }}</span></td>
                 <td>{{ $project->getCreatedAt() }}</td>
                 <td>{{ $project->getUpdatedAt() }}</td>
