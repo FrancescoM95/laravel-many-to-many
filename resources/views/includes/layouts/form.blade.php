@@ -6,8 +6,9 @@
 @endif
 
 @csrf
-<div class="row g-4 justify-content-end py-5">
-    <div class="col-5">
+<div class="row g-4 justify-content-end py-2">
+
+    <div class="col-4">
         <label for="title" class="form-label">Titolo</label>
         <input type="text" class="form-control @error('title') is-invalid @elseif(old('title', '')) is-valid @enderror" id="title" name="title" placeholder="Inserisci titolo" value="{{old('title', $project->title)}}">
         @error('title')
@@ -20,65 +21,14 @@
         </div>  
         @enderror
     </div>
+
     <div class="col-4">
         <label for="slug" class="form-label">Slug</label>
         <input type="text" class="form-control" id="slug" value="{{ Str::slug(old('title', $project->title)) }}" disabled>
     </div>
-    <div class="col-3">
-        <label for="form-check" class="form-label">Linguaggi di programmazione</label>
-        @foreach ($technologies as $technology)
-        <div class="form-check form-check-inline" id="form-check">
-            <input class="form-check-input" type="checkbox" name="technologies[]" id="{{ "technology-$technology->id" }}" value="{{ $technology->id}}" @if (in_array($technology->id, old('technologies', $prev_techs))) checked @endif>
-            <label for="title" class="form-label">{{ $technology->label }}</label>
-        </div>
-        @endforeach
-       
-
-
-        {{-- <div class="form-group d-flex gap-3">
-            <div class="form-check">
-                <input class="form-check-input  @error('programming_languages') is-invalid @enderror" type="checkbox" id="htmlCheckbox" name="programming_languages[]" value="HTML" {{ $project->exists && strpos($project->programming_languages, 'HTML') !== false ? 'checked' : '' }}>
-                <label class="form-check-label" for="htmlCheckbox">
-                    HTML
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input  @error('programming_languages') is-invalid @enderror" type="checkbox" id="cssCheckbox" name="programming_languages[]" value="CSS" {{ $project->exists && strpos($project->programming_languages, 'CSS') !== false ? 'checked' : '' }}>
-                <label class="form-check-label" for="cssCheckbox">
-                    CSS
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input  @error('programming_languages') is-invalid @enderror" type="checkbox" id="jsCheckbox" name="programming_languages[]" value="JavaScript" {{ $project->exists && strpos($project->programming_languages, 'JavaScript') !== false ? 'checked' : '' }}>
-                <label class="form-check-label" for="jsCheckbox">
-                    JavaScript
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input  @error('programming_languages') is-invalid @enderror" type="checkbox" id="phpCheckbox" name="programming_languages[]" value="PHP" {{ $project->exists && strpos($project->programming_languages, 'PHP') !== false ? 'checked' : '' }}>
-                <label class="form-check-label" for="phpCheckbox">
-                    PHP
-                </label>
-            </div>
-        </div> --}}
-    </div>
-
-    <div class="col-9">
-        <label for="image">Inesrisci url immagine</label>
-        <input type="file" class="form-control @error('image') is-invalid @elseif(old('image', '')) is-valid @enderror" id="image" name="image" placeholder="Carica immmagine" value="{{old('image', $project->image)}}">
-        @error('image')
-        <div class="invalid-feedback">
-            {{ $message }}
-        </div>
-        @else
-        <div class="form-text">
-            Inserisci l'immagine del progetto.
-        </div>  
-        @enderror
-    </div>
-
-    <div class="col-3">
-        <label for="type_id">Seleziona Categoria</label>
+ 
+    <div class="col-4">
+        <label for="type_id" class="mb-2">Categoria</label>
         <select class="form-select @error('type_id') is-invalid @elseif(old('type_id', '')) is-valid @enderror" id="type_id" name="type_id">
             <option value="">Nessuna</option>
             @foreach ($types as $type){
@@ -92,14 +42,47 @@
             </div>
             @else
             <div class="form-text">
-                Inserisci la categoria del progetto.
+                Seleziona la categoria del progetto.
             </div>  
             @enderror
+    </div>
+
+    <div class="col-12">
+        <div class="form-label">Linguaggi di Programmazione</div>
+        @foreach ($technologies as $technology)
+        <div class="form-check form-check-inline" id="form-check">
+            <input class="form-check-input" type="checkbox" name="technologies[]" id="{{ "technology-$technology->id" }}" value="{{ $technology->id}}" @if (in_array($technology->id, old('technologies', $prev_techs))) checked @endif>
+            <label for="technology-{{ $technology->id }}" class="form-label">{{ $technology->label }}</label>
+        </div>
+        @endforeach
+        @error('form-check')
+            <div class="invalid-feedback">
+                {{ $message }}
+            </div>
+        @else
+        <div class="form-text">
+            Seleziona i linuguaggi di programmazione utilizzati nel progetto.
+        </div>  
+        @enderror
+    </div>
+
+    <div class="col-12">
+        <label for="image" class="mb-2">Immagine</label>
+        <input type="file" class="form-control @error('image') is-invalid @elseif(old('image', '')) is-valid @enderror" id="image" name="image" placeholder="Carica immmagine" value="{{old('image', $project->image)}}">
+        @error('image')
+        <div class="invalid-feedback">
+            {{ $message }}
+        </div>
+        @else
+        <div class="form-text">
+            Inserisci l'immagine del progetto.
+        </div>  
+        @enderror
     </div>
     
     <div class="col-12">
         <label for="content" class="form-label">Descizione</label>
-        <textarea class="form-control @error('content') is-invalid @elseif(old('content', '')) is-valid @enderror" id="content" name="content" rows="10" placeholder="Inserisci descizione">{{old('content', $project->content)}}</textarea>
+        <textarea class="form-control @error('content') is-invalid @elseif(old('content', '')) is-valid @enderror" id="content" name="content" rows="7" placeholder="Inserisci descizione">{{old('content', $project->content)}}</textarea>
         @error('content')
         <div class="invalid-feedback">
             {{ $message }}
@@ -110,7 +93,7 @@
         </div>  
         @enderror
     </div>
-    <div class="col-3 d-flex gap-2 justify-content-end">
+    <div class="col-3 d-flex gap-2 justify-content-end align-items-center">
         <button type="submit" class="btn btn-success">Salva</button>
         <button type="reset" class="btn btn-secondary">Reset</button>
     </div>

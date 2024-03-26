@@ -30,9 +30,11 @@ class ProjectController extends Controller
     public function create()
     {
         $project = new Project();
+
         $types = Type::select('label', 'id')->get();
         $technologies = Technology::select('label', 'id')->get();
-        return view('admin.projects.create', compact('project', 'types', 'technologies'));
+        $prev_techs = $project->technologies->pluck('id')->toArray();
+        return view('admin.projects.create', compact('project', 'types', 'technologies', 'prev_techs'));
     }
 
     /**
